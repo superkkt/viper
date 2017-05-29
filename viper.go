@@ -53,7 +53,7 @@ func init() {
 type remoteConfigFactory interface {
 	Get(rp RemoteProvider) (io.Reader, error)
 	Watch(rp RemoteProvider) (io.Reader, error)
-	WatchChannel(rp RemoteProvider)(<-chan *RemoteResponse, chan bool)
+	WatchChannel(rp RemoteProvider) (<-chan *RemoteResponse, chan bool)
 }
 
 // RemoteConfig is optional, see the remote package
@@ -269,7 +269,9 @@ func (v *Viper) WatchConfig() {
 							if err != nil {
 								log.Println("error:", err)
 							}
-							v.onConfigChange(event)
+							if v.onConfigChange != nil {
+								v.onConfigChange(event)
+							}
 						}
 					}
 				case err := <-watcher.Errors:
